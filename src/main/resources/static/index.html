@@ -50,7 +50,7 @@
         <div class="body">
             <label for="me">Your User ID</label>
             <div class="row">
-                <input id="me" placeholder="e.g., alice" value="alice" />
+                <input id="me" placeholder="e.g., alice"  />
                 <button id="btnConnect">Connect</button>
                 <button id="btnDisconnect" class="secondary">Disconnect</button>
             </div>
@@ -61,7 +61,7 @@
             <hr style="margin:16px 0; border:0; border-top:1px dashed #223055"/>
 
             <div class="row">
-                <button id="btnGenKeys">Generate Keys (2048)</button>
+                <button id="btnGenKeys">Generate Keys</button>
                 <button id="btnGetPub" class="secondary">Get Public Key</button>
             </div>
             <pre id="pubOut" style="display:none; margin-top:10px"><code></code></pre>
@@ -73,10 +73,10 @@
         <h2>Send Message</h2>
         <div class="body">
             <label for="to">Receiver ID</label>
-            <input id="to" placeholder="e.g., bob" value="bob" />
+            <input id="to" placeholder="e.g., bob"  />
 
             <label for="text">Message</label>
-            <textarea id="text" placeholder="Type something nice…">HelloBob</textarea>
+            <textarea id="text" placeholder="Type something nice…"></textarea>
 
             <div class="row" style="margin-top:10px">
                 <button id="btnSend">Send</button>
