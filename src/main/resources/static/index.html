@@ -3,97 +3,40 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>ICS344 Project</title>
     <style>
+        :root { --bg:#0b1220; --panel:#121a2b; --muted:#94a3b8; --text:#e2e8f0; --accent:#60a5fa; --ok:#22c55e; --err:#ef4444; }
         * { box-sizing: border-box; }
-        body {
-            margin:0;
-            font-family: system-ui, sans-serif;
-            background: white;
-            color: black;
-        }
-        header {
-            padding:16px 24px;
-            border-bottom:1px solid #cccccc;
-            background:#f8f8f8;
-        }
-        h1 { margin:0; font-size:20px; }
-        main {
-            max-width:900px;
-            margin:0 auto;
-            padding:24px;
-            display:grid;
-            grid-template-columns: 320px 1fr;
-            gap:20px;
-        }
-        .card {
-            background:#f8f8f8;
-            border:1px solid #cccccc;
-            border-radius:8px;
-        }
-        .card h2 {
-            margin:0;
-            padding:10px 14px;
-            font-size:15px;
-            border-bottom:1px solid #cccccc;
-        }
-        .card .body { padding:14px; }
-        label { display:block; margin:10px 0 6px; font-size:13px; }
-        input, select, textarea {
-            width:100%;
-            padding:8px 10px;
-            border-radius:6px;
-            border:1px solid #cccccc;
-            background:#fff;
-            color:#000;
-            outline:none;
-        }
-        input:focus, textarea:focus {
-            border-color:#000;
-        }
+        body { margin:0; font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial; background:linear-gradient(180deg,#0b1220,#0e172a); color:var(--text); }
+        header { padding:16px 24px; border-bottom:1px solid #1f2a44; position:sticky; top:0; background:rgba(11,18,32,.9); backdrop-filter:saturate(150%) blur(6px); }
+        h1 { margin:0; font-size:20px; letter-spacing:.3px; }
+        main { max-width:1100px; margin:0 auto; padding:24px; display:grid; grid-template-columns: 360px 1fr; gap:20px; }
+        .card { background:var(--panel); border:1px solid #1f2a44; border-radius:14px; box-shadow: 0 10px 30px rgba(0,0,0,.25); }
+        .card h2 { margin:0; padding:14px 16px; font-size:15px; border-bottom:1px dashed #223055; color:#cbd5e1; }
+        .card .body { padding:14px 16px; }
+        label { display:block; margin:10px 0 6px; color:#cbd5e1; font-size:13px; }
+        input, select, textarea { width:100%; padding:10px 12px; border-radius:10px; border:1px solid #223055; background:#0f172a; color:var(--text); outline:none; }
+        input:focus, textarea:focus { border-color:#33518f; box-shadow:0 0 0 3px rgba(96,165,250,.15); }
         textarea { min-height:70px; resize:vertical; }
         .row { display:flex; gap:10px; align-items:center; }
         .row > * { flex:1; }
-        button {
-            border:1px solid #999999;
-            background:black;
-            padding:8px 10px;
-            border-radius:6px;
-            color:white;
-            cursor:pointer;
-        }
-        button:hover { background:#d0d0d0; color:#000; }
-        button.secondary { background:#f9f9f9; color:#000; }
-        .muted { color:#666666; font-size:12px; }
-        .status-dot { display:inline-block; width:10px; height:10px; border-radius:50%; margin-right:6px; background:#000; }
-        .log { height:400px; overflow:auto; padding:0; margin:0; list-style:none; }
-        .log li { padding:10px; border-top:1px solid #cccccc; }
+        button { border:1px solid #24467d; background:linear-gradient(180deg,#1d3b6a,#1a3057); padding:10px 12px; border-radius:10px; color:#dbeafe; cursor:pointer; font-weight:600; }
+        button:hover { filter:brightness(1.05); }
+        button.secondary { background:transparent; border-color:#334155; color:#cbd5e1; }
+        button.danger { background:linear-gradient(180deg,#5b2031,#4b1a28); border-color:#7f1d1d; color:#fecaca; }
+        .muted { color:var(--muted); font-size:12px; }
+        .status-dot { display:inline-block; width:10px; height:10px; border-radius:50%; margin-right:6px; vertical-align:middle; }
+        .ok { background:var(--ok); }
+        .warn { background:#f59e0b; }
+        .err { background:var(--err); }
+        .log { height:460px; overflow:auto; padding:0; margin:0; list-style:none; }
+        .log li { padding:10px 12px; border-top:1px solid #1f2a44; }
         .msg { display:grid; grid-template-columns: 1fr auto; gap:6px; }
-        .msg .meta { font-size:12px; color:#666666; }
-        .badge {
-            display:inline-block;
-            padding:2px 8px;
-            border-radius:999px;
-            border:1px solid #cccccc;
-            font-size:11px;
-            color:#000;
-        }
+        .msg .meta { font-size:12px; color:#94a3b8; }
+        .badge { display:inline-block; padding:2px 8px; border-radius:999px; border:1px solid #334155; font-size:11px; color:#cbd5e1; }
         details { margin-top:6px; }
-        code {
-            font-family: monospace;
-            font-size:0.85rem;
-            color:#000;
-        }
-        pre {
-            background:#fff;
-            border:1px solid #cccccc;
-            padding:10px;
-            border-radius:6px;
-            overflow:auto;
-        }
+        code { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace; font-size:.85rem; color:#e5e7eb; }
+        pre { background:#0b1220; border:1px solid #1f2a44; padding:10px; border-radius:10px; overflow:auto; }
     </style>
-
-
 </head>
 <body>
 <header>
@@ -111,11 +54,14 @@
                 <button id="btnConnect">Connect</button>
                 <button id="btnDisconnect" class="secondary">Disconnect</button>
             </div>
+            <div style="margin-top:8px" class="muted">
+                <span id="connDot" class="status-dot warn"></span><span id="connText">disconnected</span>
+            </div>
 
             <hr style="margin:16px 0; border:0; border-top:1px dashed #223055"/>
 
             <div class="row">
-                <button id="btnGenKeys">Generate Keys (2048)</button>
+                <button id="btnGenKeys">Generate Keys</button>
                 <button id="btnGetPub" class="secondary">Get Public Key</button>
             </div>
             <pre id="pubOut" style="display:none; margin-top:10px"><code></code></pre>
@@ -146,115 +92,86 @@
 </main>
 
 <script>
-    // Shorthand query selector
     const qs = (sel) => document.querySelector(sel);
+    const me = qs('#me');
+    const to = qs('#to');
+    const text = qs('#text');
+    const log = qs('#log');
+    const connDot = qs('#connDot');
+    const connText = qs('#connText');
+    const pubOut = qs('#pubOut');
 
-    // Cache DOM elements we interact with frequently
-    const me = qs('#me');              // input: current user (sender)
-    const to = qs('#to');              // input: receiver user id
-    const text = qs('#text');          // textarea: message text
-    const log = qs('#log');            // ul: log of events/results
-    const pubOut = qs('#pubOut');      // <pre> container for public key
+    let es = null; // EventSource instance
 
-    // Holds the current SSE connection (EventSource)
-    let es = null;
+    function setConn(state) {
+        connDot.classList.remove('ok','warn','err');
+        if (state === 'open') { connDot.classList.add('ok'); connText.textContent = 'connected'; }
+        else if (state === 'connecting') { connDot.classList.add('warn'); connText.textContent = 'connecting…'; }
+        else { connDot.classList.add('err'); connText.textContent = 'disconnected'; }
+    }
 
-
-    /**
-     * Append a new entry to the top of the log.
-     * Options:
-     * - title: string
-     * - badge: small label (e.g., "sent", "decrypted", "http", "keys")
-     * - meta: right-aligned text (e.g., timestamp)
-     * - plaintext: optional decrypted text to show
-     * - envelope: optional raw envelope object (shown in <details>)
-     * - error: optional error string
-     */
     function addLog({ title, badge, meta, plaintext, envelope, error }) {
         const li = document.createElement('li');
-
-        // Header row with title + badge and meta (timestamp)
         const head = document.createElement('div');
         head.className = 'msg';
         head.innerHTML = `
-      <div><strong>${title}</strong> ${badge ? `<span class="badge">${badge}</span>`:''}</div>
-      <div class="meta">${meta || ''}</div>
-    `;
+        <div><strong>${title}</strong> ${badge ? `<span class="badge">${badge}</span>`:''}</div>
+        <div class="meta">${meta || ''}</div>
+      `;
         li.appendChild(head);
 
-        // Show decrypted plaintext when available
         if (plaintext !== undefined) {
             const p = document.createElement('div');
             p.innerHTML = `<div style="margin-top:6px">Plaintext: <code>${escapeHtml(plaintext)}</code></div>`;
             li.appendChild(p);
         }
 
-        // Show error when present
         if (error) {
             const e = document.createElement('div');
             e.innerHTML = `<div style="margin-top:6px; color:#fecaca">Error: <code>${escapeHtml(error)}</code></div>`;
             li.appendChild(e);
         }
 
-        // Expandable raw envelope for debugging / demo
         if (envelope) {
             const det = document.createElement('details');
             const sum = document.createElement('summary');
             sum.textContent = 'Raw envelope';
             det.appendChild(sum);
-
             const pre = document.createElement('pre');
             const code = document.createElement('code');
             code.textContent = JSON.stringify(envelope, null, 2);
             pre.appendChild(code);
             det.appendChild(pre);
-
             li.appendChild(det);
         }
 
-        // Prepend to the log (newest on top)
         log.insertBefore(li, log.firstChild);
     }
 
-    // Escape HTML special chars to safely render plaintext/errors
-    function escapeHtml(s) {
-        return (s+'').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-    }
+    function escapeHtml(s) { return (s+'').replace(/[&<>\"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
 
-    // ----- Connect to SSE -----
+    // Connect to SSE
     qs('#btnConnect').addEventListener('click', () => {
-        // If a stream already exists, close it before opening a new one
         if (es) { try { es.close(); } catch (_) {} }
-
         const userId = me.value.trim();
         if (!userId) return alert('Enter your user ID');
 
         setConn('connecting');
-
-        // Open an SSE stream to the backend for this user
         es = new EventSource(`/api/chat/connect/${encodeURIComponent(userId)}`);
 
-        // When the stream opens, mark the UI as connected
         es.addEventListener('open', () => setConn('open'));
 
-        // Your backend emits events named "message"
+        // The backend uses .name("message"), so listen for the custom event name "message".
         es.addEventListener('message', async (evt) => {
             try {
-                // Parse the incoming chat payload
-                // shape: { senderId, receiverId, envelope, timestamp }
-                const chat = JSON.parse(evt.data);
-
-                // Immediately ask backend to verify & decrypt the envelope
+                const chat = JSON.parse(evt.data); // { senderId, receiverId, envelope, timestamp }
+                // Immediately ask backend to decrypt
                 const resp = await fetch('/api/crypto/decrypt', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    method: 'POST', headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ envelope: chat.envelope })
                 });
-
                 const out = await resp.json();
-
                 if (out.status === 'OK') {
-                    // Success: show plaintext and keep raw envelope in details
                     addLog({
                         title: `From ${chat.senderId} → ${chat.receiverId}`,
                         badge: 'decrypted',
@@ -263,7 +180,6 @@
                         envelope: chat.envelope
                     });
                 } else {
-                    // Error: show code + message
                     addLog({
                         title: `From ${chat.senderId} → ${chat.receiverId}`,
                         badge: 'decrypt error',
@@ -273,71 +189,48 @@
                     });
                 }
             } catch (e) {
-                // Parsing or network fail
                 addLog({ title: 'Incoming message', badge: 'parse error', error: String(e) });
             }
         });
 
-        // Generic stream error: show a log entry, close, and reset state
-        es.addEventListener('error', () => {
+        es.addEventListener('error', (e) => {
             setConn('disconnected');
+            // Keep the log readable
             addLog({ title:'SSE Error', badge:'connection', error:'Stream closed or network issue' });
             try { es.close(); } catch(_) {}
             es = null;
         });
     });
 
-    // ----- Disconnect from SSE -----
-    qs('#btnDisconnect').addEventListener('click', () => {
-        if (es) { es.close(); es = null; }
-        setConn('disconnected');
-    });
+    qs('#btnDisconnect').addEventListener('click', () => { if (es) { es.close(); es = null; } setConn('disconnected'); });
 
-    // ----- Send message (uses your backend's query params API shape) -----
+    // Send message via query params as your backend expects currently
     qs('#btnSend').addEventListener('click', async () => {
         const senderId = me.value.trim();
         const receiverId = to.value.trim();
         const message = text.value;
-
         if (!senderId || !receiverId) return alert('Both sender and receiver are required');
 
-        // Build query string ?senderId=...&receiverId=...&message=...
         const params = new URLSearchParams({ senderId, receiverId, message });
-
-        // POST with no body; your backend reads query params
         const r = await fetch(`/api/chat/send?${params.toString()}`, { method: 'POST' });
-
         if (r.ok) {
-            // Locally log that we sent it
-            addLog({
-                title: `Sent → ${receiverId}`,
-                badge:'sent',
-                meta:new Date().toLocaleString(),
-                plaintext: message
-            });
-            // Highlight text for easy resend/edit
+            addLog({ title: `Sent → ${receiverId}`, badge:'sent', meta:new Date().toLocaleString(), plaintext: message });
             text.select();
         } else {
             addLog({ title:'Send failed', badge:'http', error:`HTTP ${r.status}` });
         }
     });
 
-    // ----- Clear the log -----
-    qs('#btnClear').addEventListener('click', () => {
-        log.innerHTML = '';
-    });
+    qs('#btnClear').addEventListener('click', () => { log.innerHTML = ''; });
 
-    // ----- Generate keys for the current user -----
+    // Keys helpers (for convenience during demos)
     qs('#btnGenKeys').addEventListener('click', async () => {
         const userId = me.value.trim();
         if (!userId) return alert('Enter user ID');
-
         const r = await fetch('/api/keys/generate', {
-            method:'POST',
-            headers:{'Content-Type':'application/json'},
+            method:'POST', headers:{'Content-Type':'application/json'},
             body: JSON.stringify({ userId, keySize: 2048 })
         });
-
         if (r.ok) {
             const j = await r.json();
             addLog({ title:`Keys generated for ${j.userId}`, badge:'keys', meta:j.createdAt });
@@ -346,13 +239,10 @@
         }
     });
 
-    // ----- Fetch and show the user's public key -----
     qs('#btnGetPub').addEventListener('click', async () => {
         const userId = me.value.trim();
         if (!userId) return alert('Enter user ID');
-
         const r = await fetch(`/api/keys/${encodeURIComponent(userId)}/public`);
-
         if (r.ok) {
             const j = await r.json();
             pubOut.style.display = 'block';
@@ -363,9 +253,8 @@
         }
     });
 
-    // Set default UI state on load
+    // Default state
     setConn('disconnected');
 </script>
-
 </body>
 </html>
