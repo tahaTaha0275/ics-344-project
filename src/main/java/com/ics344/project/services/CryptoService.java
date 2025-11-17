@@ -1,9 +1,15 @@
 package com.ics344.project.services;
 
-import com.ics344.project.dto.DecryptResponse;
-import com.ics344.project.dto.EnvelopeDTO;
-import com.ics344.project.utils.PemUtils;
-import org.springframework.stereotype.Service;
+import java.io.File;
+import java.nio.charset.StandardCharsets;
+import java.security.PrivateKey;
+import java.security.PublicKey;
+import java.security.SecureRandom;
+import java.security.Signature;
+import java.security.spec.MGF1ParameterSpec;
+import java.time.Instant;
+import java.util.Base64;
+import java.util.Objects;
 
 import javax.crypto.Cipher;
 import javax.crypto.KeyGenerator;
@@ -12,13 +18,12 @@ import javax.crypto.spec.GCMParameterSpec;
 import javax.crypto.spec.OAEPParameterSpec;
 import javax.crypto.spec.PSource;
 import javax.crypto.spec.SecretKeySpec;
-import java.io.File;
-import java.nio.charset.StandardCharsets;
-import java.security.*;
-import java.security.spec.MGF1ParameterSpec;
-import java.time.Instant;
-import java.util.Base64;
-import java.util.Objects;
+
+import org.springframework.stereotype.Service;
+
+import com.ics344.project.dto.DecryptResponse;
+import com.ics344.project.dto.EnvelopeDTO;
+import com.ics344.project.utils.PemUtils;
 
 @Service
 public class CryptoService {
@@ -200,4 +205,38 @@ public class CryptoService {
 
     private static String b64(byte[] x) { return Base64.getEncoder().encodeToString(x); }
     private static String nz(String s) { return s == null ? "" : s; }
+    
+    
+    // Hussain Work
+    
+    //Ciphertext Tampering 
+    
+    public EnvelopeDTO tamperEnvelope(EnvelopeDTO original) {
+        if (original == null) return null;
+        
+        EnvelopeDTO tampered = new EnvelopeDTO();
+        tampered.senderId     = original.senderId;
+        tampered.receiverId   = original.receiverId;
+        tampered.sessionKeyEnc= original.sessionKeyEnc;
+        tampered.iv           = original.iv;
+        tampered.tag          = original.tag;
+        tampered.timestamp    = original.timestamp;
+        tampered.nonce        = original.nonce;
+        tampered.signature    = original.signature; // attacker cannot re-sign
+    
+    try {
+        byte[] ctBytes = Base64.getDecoder().decode(original.ciphertext);
+        if (ctBytes.length > 0) {
+            ctBytes[0] ^= 0x01; // flip 1 bit
+        }
+        tampered.ciphertext = Base64.getEncoder().encodeToString(ctBytes);
+    } catch (IllegalArgumentException e) {
+        // if ciphertext is not valid base64, just keep original
+        tampered.ciphertext = original.ciphertext;
+    }
+    
+    return tampered;
+}
+
+
 }

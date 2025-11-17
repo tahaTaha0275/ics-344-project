@@ -1,13 +1,17 @@
 package com.ics344.project.controllers;
 
 
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
 import com.ics344.project.dto.DecryptRequest;
 import com.ics344.project.dto.DecryptResponse;
 import com.ics344.project.dto.EncryptRequest;
 import com.ics344.project.dto.EnvelopeDTO;
 import com.ics344.project.services.CryptoService;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/crypto")
@@ -35,4 +39,14 @@ public class CryptoController {
         DecryptResponse resp = cryptoService.decryptEnvelope(req.getEnvelope());
         return ResponseEntity.ok(resp);
     }
+
+    //Hussain Cipther 
+    @PostMapping("/simulate-tamper")
+    public DecryptResponse simulateTamper(@RequestBody EnvelopeDTO envelope) {
+    EnvelopeDTO tampered = cryptoService.tamperEnvelope(envelope);
+    return cryptoService.decryptEnvelope(tampered);
+}
+
+
+    
 }
