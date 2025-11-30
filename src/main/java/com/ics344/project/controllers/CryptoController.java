@@ -5,12 +5,15 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.ics344.project.dto.BruteForceResult;
 import com.ics344.project.dto.DecryptRequest;
 import com.ics344.project.dto.DecryptResponse;
 import com.ics344.project.dto.EncryptRequest;
 import com.ics344.project.dto.EnvelopeDTO;
+import com.ics344.project.dto.MitmResult;
 import com.ics344.project.services.CryptoService;
 
 @RestController
@@ -45,6 +48,31 @@ public class CryptoController {
     public DecryptResponse simulateTamper(@RequestBody EnvelopeDTO envelope) {
     EnvelopeDTO tampered = cryptoService.tamperEnvelope(envelope);
     return cryptoService.decryptEnvelope(tampered);
+}
+
+//Brute Force
+    @PostMapping("/bruteforce-demo")
+    public BruteForceResult bruteForceDemo() throws Exception {
+        return cryptoService.bruteForceDemo();
+    }
+
+    @PostMapping("/bruteforce")
+public ResponseEntity<BruteForceResult> bruteForce() throws Exception {
+    BruteForceResult result = cryptoService.bruteForceDemo();
+    return ResponseEntity.ok(result);
+}
+
+
+//MITM
+
+@PostMapping("/mitm")
+public ResponseEntity<MitmResult> mitmAttack(
+        @RequestParam String realSenderId,
+        @RequestParam String receiverId,
+        @RequestParam String attackerId
+) {
+    MitmResult result = cryptoService.mitmImpersonationDemo(realSenderId, receiverId, attackerId);
+    return ResponseEntity.ok(result);
 }
 
 

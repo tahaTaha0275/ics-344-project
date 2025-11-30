@@ -21,12 +21,19 @@ import javax.crypto.spec.SecretKeySpec;
 
 import org.springframework.stereotype.Service;
 
+import com.ics344.project.dto.BruteForceResult;
 import com.ics344.project.dto.DecryptResponse;
 import com.ics344.project.dto.EnvelopeDTO;
+import com.ics344.project.dto.MitmResult;
 import com.ics344.project.utils.PemUtils;
 
 @Service
 public class CryptoService {
+
+    //Addition from Hussain
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CryptoService.class);
+
+    //
 
     /** Builds a full, signed envelope per Milestone B rules. */
     public EnvelopeDTO encryptEnvelope(String plaintext, String senderId, String receiverId) throws Exception {
@@ -236,6 +243,227 @@ public class CryptoService {
     }
     
     return tampered;
+}
+
+//Brute Force
+ // on a WEAK 4-digit PIN 
+
+    /** Derive a very weak AES-256 key from a 4-digit PIN (for demo ONLY). */
+    private static SecretKeySpec weakKeyFromPin(String pin) {
+        byte[] pinBytes = pin.getBytes(StandardCharsets.UTF_8);
+        byte[] keyBytes = new byte[32]; // AES-256, but only first few bytes are from PIN
+        System.arraycopy(pinBytes, 0, keyBytes, 0, Math.min(pinBytes.length, keyBytes.length));
+        return new SecretKeySpec(keyBytes, "AES");
+    }
+
+    /** Runs a full brute-force demo on a 4-digit PIN key. */
+    public BruteForceResult bruteForceDemo() throws Exception {
+        String plaintext = "Hello ICS344, this is a secret demo message.";
+
+        SecureRandom sr = SecureRandom.getInstanceStrong();
+
+        // 1) Pick a random 4-digit PIN and derive a weak AES key
+        int pinInt = sr.nextInt(10000); // 0..9999
+        String actualPin = String.format("%04d", pinInt);
+        SecretKeySpec weakKey = weakKeyFromPin(actualPin);
+
+        // 2) Encrypt with AES-GCM using this weak key
+        byte[] iv = new byte[12];
+        sr.nextBytes(iv);
+
+        Cipher aesEnc = Cipher.getInstance("AES/GCM/NoPadding");
+        GCMParameterSpec gcmEnc = new GCMParameterSpec(128, iv);
+        aesEnc.init(Cipher.ENCRYPT_MODE, weakKey, gcmEnc);
+        byte[] ctWithTag = aesEnc.doFinal(plaintext.getBytes(StandardCharsets.UTF_8));
+
+        String ctB64 = Base64.getEncoder().encodeToString(ctWithTag);
+        String ivB64 = Base64.getEncoder().encodeToString(iv);
+
+        // 3) Attacker brute-forces all 0000..9999
+        byte[] ctBytes = ctWithTag; // no need to decode each time
+        String recoveredPlaintext = null;
+        String recoveredPin = null;
+        int attempts = 0;
+
+        long start = System.nanoTime();
+
+        for (int i = 0; i < 10000; i++) {
+            String candidatePin = String.format("%04d", i);
+            SecretKeySpec trialKey = weakKeyFromPin(candidatePin);
+            attempts++;
+
+            try {
+                Cipher aesDec = Cipher.getInstance("AES/GCM/NoPadding");
+                GCMParameterSpec gcmDec = new GCMParameterSpec(128, iv);
+                aesDec.init(Cipher.DECRYPT_MODE, trialKey, gcmDec);
+                byte[] ptBytes = aesDec.doFinal(ctBytes);
+                String pt = new String(ptBytes, StandardCharsets.UTF_8);
+
+                // Attacker assumes they know that message starts with "Hello ICS344"
+                if (pt.startsWith("Hello ICS344")) {
+                    recoveredPlaintext = pt;
+                    recoveredPin = candidatePin;
+                    break;
+                }
+            } catch (Exception ignored) {
+                // wrong key -> decryption fails; attacker just tries next one
+            }
+        }
+
+        long end = System.nanoTime();
+        long millis = (end - start) / 1_000_000L;
+
+        BruteForceResult result = new BruteForceResult();
+        result.ciphertext = ctB64;
+        result.iv = ivB64;
+        result.actualPin = actualPin;
+        result.recoveredPin = recoveredPin;
+        result.recoveredPlaintext = recoveredPlaintext;
+        result.attempts = attempts;
+        result.millis = millis;
+
+        if (recoveredPin != null) {
+            result.success = true;
+            result.message = "Brute force succeeded on a weak 4-digit PIN key.";
+        } else {
+            result.success = false;
+            result.message = "Brute force failed within 0000-9999 key space (unexpected).";
+        }
+
+        log.info("Brute-force demo: actualPin={}, recoveredPin={}, attempts={}, millis={}",
+                actualPin, recoveredPin, attempts, millis);
+
+        return result;
+    }
+
+
+
+    //MINTM
+
+    private EnvelopeDTO forgeEnvelopeImpersonatingSender(
+        String plaintext,
+        String forgedSenderId,
+        String receiverId,
+        String attackerId
+) throws Exception {
+
+    Objects.requireNonNull(plaintext);
+    Objects.requireNonNull(forgedSenderId);
+    Objects.requireNonNull(receiverId);
+    Objects.requireNonNull(attackerId);
+
+    // 1) Attacker’s private key (wrong key)
+    PrivateKey attackerPriv = PemUtils.privateKeyFromPem(
+            PemUtils.readStringFromFile(new File("keys", attackerId + "_private.pem"))
+    );
+
+    // 2) Receiver’s real public key
+    PublicKey receiverPub = PemUtils.publicKeyFromPem(
+            PemUtils.readStringFromFile(new File("keys", receiverId + "_public.pem"))
+    );
+
+    // 3) AES key + IV
+    KeyGenerator kg = KeyGenerator.getInstance("AES");
+    kg.init(256);
+    SecretKey aesKey = kg.generateKey();
+
+    byte[] iv = new byte[12];
+    SecureRandom sr = SecureRandom.getInstanceStrong();
+    sr.nextBytes(iv);
+
+    Cipher aes = Cipher.getInstance("AES/GCM/NoPadding");
+    GCMParameterSpec gcm = new GCMParameterSpec(128, iv);
+    aes.init(Cipher.ENCRYPT_MODE, aesKey, gcm);
+    byte[] ctWithTag = aes.doFinal(plaintext.getBytes(StandardCharsets.UTF_8));
+
+    int tagLen = 16;
+    int ctLen = ctWithTag.length - tagLen;
+    byte[] ciphertext = new byte[ctLen];
+    byte[] tag = new byte[tagLen];
+    System.arraycopy(ctWithTag, 0, ciphertext, 0, ctLen);
+    System.arraycopy(ctWithTag, ctLen, tag, 0, tagLen);
+
+    // 4) Wrap AES key
+    Cipher rsa = Cipher.getInstance("RSA/ECB/OAEPWithSHA-256AndMGF1Padding");
+    OAEPParameterSpec oaep = new OAEPParameterSpec(
+            "SHA-256", "MGF1", MGF1ParameterSpec.SHA256, PSource.PSpecified.DEFAULT
+    );
+    rsa.init(Cipher.ENCRYPT_MODE, receiverPub, oaep);
+    byte[] sessionKeyEnc = rsa.doFinal(aesKey.getEncoded());
+
+    // 5) Build forged envelope (senderId lies)
+    EnvelopeDTO env = new EnvelopeDTO();
+    env.senderId      = forgedSenderId; // fake!
+    env.receiverId    = receiverId;
+    env.sessionKeyEnc = Base64.getEncoder().encodeToString(sessionKeyEnc);
+    env.iv            = Base64.getEncoder().encodeToString(iv);
+    env.ciphertext    = Base64.getEncoder().encodeToString(ciphertext);
+    env.tag           = Base64.getEncoder().encodeToString(tag);
+    env.timestamp     = Instant.now().toString();
+
+    byte[] nonce = new byte[16];
+    sr.nextBytes(nonce);
+    env.nonce = Base64.getEncoder().encodeToString(nonce);
+
+    // 6) Attacker signs – but receiver will verify with realSenderId public key → mismatch
+    Signature sig = Signature.getInstance("SHA256withRSA");
+    sig.initSign(attackerPriv);
+    sig.update(canonicalBytes(env));
+    env.signature = Base64.getEncoder().encodeToString(sig.sign());
+
+    return env;
+}
+
+
+public MitmResult mitmImpersonationDemo(String realSenderId, String receiverId, String attackerId) {
+    MitmResult result = new MitmResult();
+    result.realSenderId = realSenderId;
+    result.receiverId = receiverId;
+    result.attackerId = attackerId;
+    result.forgedSenderId = realSenderId;
+
+    String plaintext = "Hello ICS344, this is a MITM impersonation demo.";
+
+    try {
+        // Attacker forges an envelope pretending to be realSenderId
+        EnvelopeDTO forged = forgeEnvelopeImpersonatingSender(
+                plaintext,
+                realSenderId,  // forged sender ID in envelope metadata
+                receiverId,
+                attackerId
+        );
+
+        // Receiver tries decrypting normally
+        DecryptResponse resp = decryptEnvelope(forged);
+
+        result.decryptStatus = resp.getCode() != null ? resp.getCode() : resp.getStatus();
+        result.decryptMessage = resp.getMessage();
+        result.plaintextTried = plaintext;
+
+        // Detection: signature mismatch
+        if (!"OK".equalsIgnoreCase(result.decryptStatus)) {
+            result.success = true;
+            result.message =
+                "MITM impersonation attack was detected. " +
+                "Attacker signed with their own private key while claiming to be '" +
+                realSenderId + "', causing SIGNATURE_INVALID.";
+        } else {
+            result.success = false;
+            result.message = "Unexpected: forged message was accepted!";
+        }
+
+        log.info("MITM demo: realSenderId={}, receiverId={}, attackerId={}, decryptStatus={}",
+                realSenderId, receiverId, attackerId, result.decryptStatus);
+
+    } catch (Exception e) {
+        result.success = false;
+        result.decryptStatus = "ERROR";
+        result.decryptMessage = e.getMessage();
+        result.message = "Exception during MITM attack demo: " + e.getMessage();
+        log.warn("MITM attack demo failed", e);
+    }
+
+    return result;
 }
 
 

@@ -6,4 +6,7 @@ public class DecryptRequest {
 
     public EnvelopeDTO getEnvelope() { return envelope; }
     public void setEnvelope(EnvelopeDTO envelope) { this.envelope = envelope; }
+
+
+    
 }
