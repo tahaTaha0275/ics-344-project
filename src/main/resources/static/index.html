@@ -4,38 +4,119 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <style>
-        :root { --bg:#0b1220; --panel:#121a2b; --muted:#94a3b8; --text:#e2e8f0; --accent:#60a5fa; --ok:#22c55e; --err:#ef4444; }
+        :root {
+            --bg:#0b1220; --panel:#121a2b; --muted:#94a3b8; --text:#e2e8f0;
+            --accent:#60a5fa; --ok:#22c55e; --err:#ef4444;
+        }
         * { box-sizing: border-box; }
-        body { margin:0; font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial; background:linear-gradient(180deg,#0b1220,#0e172a); color:var(--text); }
-        header { padding:16px 24px; border-bottom:1px solid #1f2a44; position:sticky; top:0; background:rgba(11,18,32,.9); backdrop-filter:saturate(150%) blur(6px); }
+        body {
+            margin:0;
+            font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial;
+            background:linear-gradient(180deg,#0b1220,#0e172a);
+            color:var(--text);
+        }
+        header {
+            padding:16px 24px;
+            border-bottom:1px solid #1f2a44;
+            position:sticky;
+            top:0;
+            background:rgba(11,18,32,.9);
+            backdrop-filter:saturate(150%) blur(6px);
+        }
         h1 { margin:0; font-size:20px; letter-spacing:.3px; }
-        main { max-width:1100px; margin:0 auto; padding:24px; display:grid; grid-template-columns: 360px 1fr; gap:20px; }
-        .card { background:var(--panel); border:1px solid #1f2a44; border-radius:14px; box-shadow: 0 10px 30px rgba(0,0,0,.25); }
-        .card h2 { margin:0; padding:14px 16px; font-size:15px; border-bottom:1px dashed #223055; color:#cbd5e1; }
+        main {
+            max-width:1100px;
+            margin:0 auto;
+            padding:24px;
+            display:grid;
+            grid-template-columns: 360px 1fr;
+            gap:20px;
+        }
+        .card {
+            background:var(--panel);
+            border:1px solid #1f2a44;
+            border-radius:14px;
+            box-shadow: 0 10px 30px rgba(0,0,0,.25);
+        }
+        .card h2 {
+            margin:0;
+            padding:14px 16px;
+            font-size:15px;
+            border-bottom:1px dashed #223055;
+            color:#cbd5e1;
+        }
         .card .body { padding:14px 16px; }
         label { display:block; margin:10px 0 6px; color:#cbd5e1; font-size:13px; }
-        input, select, textarea { width:100%; padding:10px 12px; border-radius:10px; border:1px solid #223055; background:#0f172a; color:var(--text); outline:none; }
-        input:focus, textarea:focus { border-color:#33518f; box-shadow:0 0 0 3px rgba(96,165,250,.15); }
+        input, textarea {
+            width:100%;
+            padding:10px 12px;
+            border-radius:10px;
+            border:1px solid #223055;
+            background:#0f172a;
+            color:var(--text);
+            outline:none;
+        }
+        input:focus, textarea:focus {
+            border-color:#33518f;
+            box-shadow:0 0 0 3px rgba(96,165,250,.15);
+        }
         textarea { min-height:70px; resize:vertical; }
         .row { display:flex; gap:10px; align-items:center; }
         .row > * { flex:1; }
-        button { border:1px solid #24467d; background:linear-gradient(180deg,#1d3b6a,#1a3057); padding:10px 12px; border-radius:10px; color:#dbeafe; cursor:pointer; font-weight:600; }
+        button {
+            border:1px solid #24467d;
+            background:linear-gradient(180deg,#1d3b6a,#1a3057);
+            padding:10px 12px;
+            border-radius:10px;
+            color:#dbeafe;
+            cursor:pointer;
+            font-weight:600;
+        }
         button:hover { filter:brightness(1.05); }
         button.secondary { background:transparent; border-color:#334155; color:#cbd5e1; }
         button.danger { background:linear-gradient(180deg,#5b2031,#4b1a28); border-color:#7f1d1d; color:#fecaca; }
         .muted { color:var(--muted); font-size:12px; }
-        .status-dot { display:inline-block; width:10px; height:10px; border-radius:50%; margin-right:6px; vertical-align:middle; }
+        .status-dot {
+            display:inline-block;
+            width:10px; height:10px;
+            border-radius:50%;
+            margin-right:6px;
+            vertical-align:middle;
+        }
         .ok { background:var(--ok); }
         .warn { background:#f59e0b; }
         .err { background:var(--err); }
-        .log { height:460px; overflow:auto; padding:0; margin:0; list-style:none; }
+        .log {
+            height:460px;
+            overflow:auto;
+            padding:0;
+            margin:0;
+            list-style:none;
+        }
         .log li { padding:10px 12px; border-top:1px solid #1f2a44; }
         .msg { display:grid; grid-template-columns: 1fr auto; gap:6px; }
         .msg .meta { font-size:12px; color:#94a3b8; }
-        .badge { display:inline-block; padding:2px 8px; border-radius:999px; border:1px solid #334155; font-size:11px; color:#cbd5e1; }
+        .badge {
+            display:inline-block;
+            padding:2px 8px;
+            border-radius:999px;
+            border:1px solid #334155;
+            font-size:11px;
+            color:#cbd5e1;
+        }
         details { margin-top:6px; }
-        code { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace; font-size:.85rem; color:#e5e7eb; }
-        pre { background:#0b1220; border:1px solid #1f2a44; padding:10px; border-radius:10px; overflow:auto; }
+        code {
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+            font-size:.85rem;
+            color:#e5e7eb;
+        }
+        pre {
+            background:#0b1220;
+            border:1px solid #1f2a44;
+            padding:10px;
+            border-radius:10px;
+            overflow:auto;
+        }
     </style>
 </head>
 <body>
@@ -50,12 +131,13 @@
         <div class="body">
             <label for="me">Your User ID</label>
             <div class="row">
-                <input id="me" placeholder="e.g., alice"  />
+                <input id="me" placeholder="e.g., alice" />
                 <button id="btnConnect">Connect</button>
                 <button id="btnDisconnect" class="secondary">Disconnect</button>
             </div>
             <div style="margin-top:8px" class="muted">
-                <span id="connDot" class="status-dot warn"></span><span id="connText">disconnected</span>
+                <span id="connDot" class="status-dot warn"></span>
+                <span id="connText">disconnected</span>
             </div>
 
             <hr style="margin:16px 0; border:0; border-top:1px dashed #223055"/>
@@ -73,18 +155,20 @@
         <h2>Send Message</h2>
         <div class="body">
             <label for="to">Receiver ID</label>
-            <input id="to" placeholder="e.g., bob"  />
+            <input id="to" placeholder="e.g., bob" />
 
             <label for="text">Message</label>
             <textarea id="text" placeholder="Type something nice…"></textarea>
 
             <div class="row" style="margin-top:10px">
                 <button id="btnSend">Send</button>
+                <button id="btnRunAttacks" class="danger">Run Attacks</button>
                 <button id="btnClear" class="secondary">Clear Log</button>
             </div>
         </div>
     </section>
 
+    <!-- Log -->
     <section class="card" style="grid-column:1 / span 2">
         <h2>Incoming Events & Decrypt Results</h2>
         <ul id="log" class="log"></ul>
@@ -105,9 +189,16 @@
 
     function setConn(state) {
         connDot.classList.remove('ok','warn','err');
-        if (state === 'open') { connDot.classList.add('ok'); connText.textContent = 'connected'; }
-        else if (state === 'connecting') { connDot.classList.add('warn'); connText.textContent = 'connecting…'; }
-        else { connDot.classList.add('err'); connText.textContent = 'disconnected'; }
+        if (state === 'open') {
+            connDot.classList.add('ok');
+            connText.textContent = 'connected';
+        } else if (state === 'connecting') {
+            connDot.classList.add('warn');
+            connText.textContent = 'connecting…';
+        } else {
+            connDot.classList.add('err');
+            connText.textContent = 'disconnected';
+        }
     }
 
     function addLog({ title, badge, meta, plaintext, envelope, error }) {
@@ -148,7 +239,9 @@
         log.insertBefore(li, log.firstChild);
     }
 
-    function escapeHtml(s) { return (s+'').replace(/[&<>\"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+    function escapeHtml(s) {
+        return (s+'').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+    }
 
     // Connect to SSE
     qs('#btnConnect').addEventListener('click', () => {
@@ -161,13 +254,13 @@
 
         es.addEventListener('open', () => setConn('open'));
 
-        // The backend uses .name("message"), so listen for the custom event name "message".
+        // custom event name "message" from backend
         es.addEventListener('message', async (evt) => {
             try {
                 const chat = JSON.parse(evt.data); // { senderId, receiverId, envelope, timestamp }
-                // Immediately ask backend to decrypt
                 const resp = await fetch('/api/crypto/decrypt', {
-                    method: 'POST', headers: { 'Content-Type': 'application/json' },
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ envelope: chat.envelope })
                 });
                 const out = await resp.json();
@@ -193,49 +286,206 @@
             }
         });
 
-        es.addEventListener('error', (e) => {
+        es.addEventListener('error', () => {
             setConn('disconnected');
-            // Keep the log readable
             addLog({ title:'SSE Error', badge:'connection', error:'Stream closed or network issue' });
             try { es.close(); } catch(_) {}
             es = null;
         });
     });
 
-    qs('#btnDisconnect').addEventListener('click', () => { if (es) { es.close(); es = null; } setConn('disconnected'); });
+    qs('#btnDisconnect').addEventListener('click', () => {
+        if (es) { es.close(); es = null; }
+        setConn('disconnected');
+    });
 
-    // Send message via query params as your backend expects currently
+    // Normal SEND (no attacks)
     qs('#btnSend').addEventListener('click', async () => {
         const senderId = me.value.trim();
         const receiverId = to.value.trim();
         const message = text.value;
-        if (!senderId || !receiverId) return alert('Both sender and receiver are required');
+
+        if (!senderId || !receiverId) {
+            return alert('Both sender and receiver are required');
+        }
 
         const params = new URLSearchParams({ senderId, receiverId, message });
         const r = await fetch(`/api/chat/send?${params.toString()}`, { method: 'POST' });
+
         if (r.ok) {
-            addLog({ title: `Sent → ${receiverId}`, badge:'sent', meta:new Date().toLocaleString(), plaintext: message });
+            addLog({
+                title: `Sent → ${receiverId}`,
+                badge: 'sent',
+                meta: new Date().toLocaleString(),
+                plaintext: message
+            });
             text.select();
         } else {
-            addLog({ title:'Send failed', badge:'http', error:`HTTP ${r.status}` });
+            addLog({
+                title:'Send failed',
+                badge:'http',
+                error:`HTTP ${r.status}`
+            });
         }
+    });
+
+    // Helper to run the three crypto attacks
+    async function runAttacksFor(senderId, receiverId, message) {
+        const now = () => new Date().toLocaleString();
+
+        // 1) Encrypt to get an envelope
+        const encResp = await fetch('/api/crypto/encrypt', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ plaintext: message, senderId, receiverId })
+        });
+
+        if (!encResp.ok) {
+            addLog({
+                title: 'Encrypted Envelope',
+                badge: 'encrypted',
+                meta: now(),
+                error: `HTTP ${encResp.status} while encrypting`
+            });
+            return;
+        }
+
+        const envelope = await encResp.json();
+
+        addLog({
+            title: 'Encrypted Envelope',
+            badge: 'encrypted',
+            meta: now(),
+            envelope
+        });
+
+        // 2) Tamper Attack
+        try {
+            const tamperResp = await fetch('/api/crypto/simulate-tamper', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(envelope)
+            });
+            const tamperResult = await tamperResp.json();
+            addLog({
+                title: 'Tamper Attack',
+                badge: 'attack',
+                meta: now(),
+                error: `${tamperResult.code}: ${tamperResult.message}`,
+                envelope
+            });
+        } catch (e) {
+            addLog({
+                title: 'Tamper Attack',
+                badge: 'attack',
+                meta: now(),
+                error: String(e)
+            });
+        }
+
+        // 3) Brute Force Demo (weak PIN)
+        try {
+            const bfResp = await fetch('/api/crypto/bruteforce-demo', {
+                method:'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ plaintext: message })
+            });
+
+            const bf = await bfResp.json();
+
+            addLog({
+                title: 'Brute Force Demo',
+                badge: 'attack',
+                meta: now(),
+                plaintext: bf.recoveredPlaintext ?? '(no plaintext recovered)',
+                error: bf.recoveredPin
+                    ? `Recovered PIN: ${bf.recoveredPin} | Attempts: ${bf.attempts} | Time: ${bf.millis} ms`
+                    : `Brute force result: ${bf.message || 'no details'}`
+            });
+        } catch (e) {
+            addLog({
+                title: 'Brute Force Demo',
+                badge: 'attack',
+                meta: now(),
+                error: String(e)
+            });
+        }
+
+        // 4) MITM Impersonation Attack
+        try {
+            const mitmResp = await fetch('/api/crypto/mitm-demo', {
+                method: 'POST',
+                headers: { 'Content-Type':'application/json' },
+                body: JSON.stringify({
+                    realSenderId: senderId,
+                    receiverId: receiverId,
+                    attackerId: "eve",
+                    plaintext: message
+                })
+            });
+            const mitm = await mitmResp.json();
+
+            addLog({
+                title: 'MITM Attack',
+                badge: 'attack',
+                meta: now(),
+                error: `${mitm.decryptStatus}: ${mitm.message}`
+            });
+        } catch (e) {
+            addLog({
+                title: 'MITM Attack',
+                badge: 'attack',
+                meta: now(),
+                error: String(e)
+            });
+        }
+    }
+
+    // "Run Attacks" button (does not send the chat message)
+    qs('#btnRunAttacks').addEventListener('click', async () => {
+        const senderId = me.value.trim();
+        const receiverId = to.value.trim();
+        const message = text.value;
+
+        if (!senderId || !receiverId || !message) {
+            alert('Enter sender ID, receiver ID, and a message first.');
+            return;
+        }
+
+        addLog({
+            title: 'Attack Demo',
+            badge: 'attack',
+            meta: new Date().toLocaleString(),
+            error: 'Running tamper, brute-force, and MITM demos on this message…'
+        });
+
+        await runAttacksFor(senderId, receiverId, message);
     });
 
     qs('#btnClear').addEventListener('click', () => { log.innerHTML = ''; });
 
-    // Keys helpers (for convenience during demos)
+    // Keys helpers
     qs('#btnGenKeys').addEventListener('click', async () => {
         const userId = me.value.trim();
         if (!userId) return alert('Enter user ID');
         const r = await fetch('/api/keys/generate', {
-            method:'POST', headers:{'Content-Type':'application/json'},
+            method:'POST',
+            headers:{'Content-Type':'application/json'},
             body: JSON.stringify({ userId, keySize: 2048 })
         });
         if (r.ok) {
             const j = await r.json();
-            addLog({ title:`Keys generated for ${j.userId}`, badge:'keys', meta:j.createdAt });
+            addLog({
+                title:`Keys generated for ${j.userId}`,
+                badge:'keys',
+                meta:j.createdAt
+            });
         } else {
-            addLog({ title:'Keygen failed', badge:'http', error:`HTTP ${r.status}` });
+            addLog({
+                title:'Keygen failed',
+                badge:'http',
+                error:`HTTP ${r.status}`
+            });
         }
     });
 
