@@ -6,6 +6,7 @@ import com.ics344.project.dto.KeyGenerateRequest;
 import com.ics344.project.dto.KeyGenerateResponse;
 import com.ics344.project.services.KeyService;
 import com.ics344.project.dto.PublicKeyResponse;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -13,6 +14,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/keys")
+@Slf4j
 public class KeysController {
     private final KeyService keyService;
     public KeysController(KeyService keyService){ this.keyService = keyService; }

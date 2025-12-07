@@ -2,6 +2,7 @@ package com.ics344.project.services;
 
 
 import com.ics344.project.utils.PemUtils;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
@@ -11,6 +12,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Service
+@Slf4j
 public class KeyService {
     private final File storageDir = new File("keys"); // relative to app working dir
 
@@ -39,6 +41,7 @@ public class KeyService {
         out.put("userId", userId);
         out.put("publicKeyPem", pubPem);
         out.put("createdAt", Instant.now().toString());
+        log.info("Generated public key pem for user {}", userId);
         return out;
     }
 
