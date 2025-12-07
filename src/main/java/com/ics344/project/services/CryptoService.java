@@ -186,8 +186,10 @@ public class CryptoService {
                 String plaintext = new String(plain, StandardCharsets.UTF_8);
                 return DecryptResponse.ok(plaintext);
             } catch (javax.crypto.AEADBadTagException ex) {
-                return DecryptResponse.error("INTEGRITY_FAIL", "AES-GCM authentication failed (bad tag)");
-            } catch (Exception ex) {
+                log.warn("ATTACK_DETECTED: Ciphertext tampering detected. Envelope from '{}' to '{}' failed GCM authentication.",
+                        env.senderId, env.receiverId);
+                return DecryptResponse.error("INTEGRITY_FAIL", "GCM tag mismatch => tampered data");
+            }catch (Exception ex) {
                 return DecryptResponse.error("ERROR", "AES decryption error: " + ex.getMessage());
             }
 
@@ -325,9 +327,14 @@ public class CryptoService {
         if (recoveredPin != null) {
             result.success = true;
             result.message = "Brute force succeeded on a weak 4-digit PIN key.";
+            log.warn("ATTACK_DETECTED: Weak key brute-force succeeded. PIN '{}' cracked in {} attempts ({} ms)",
+                    recoveredPin, attempts, millis);
         } else {
             result.success = false;
             result.message = "Brute force failed within 0000-9999 key space (unexpected).";
+            log.warn("ATTACK_DETECTED_AND_BLOCKED: Weak key brute-force failed. PIN '{}' cracked in {} attempts ({} ms)",
+                    recoveredPin, attempts, millis);
+
         }
 
         log.info("Brute-force demo: actualPin={}, recoveredPin={}, attempts={}, millis={}",
@@ -444,9 +451,11 @@ public MitmResult mitmImpersonationDemo(String realSenderId, String receiverId, 
         if (!"OK".equalsIgnoreCase(result.decryptStatus)) {
             result.success = true;
             result.message =
-                "MITM impersonation attack was detected. " +
-                "Attacker signed with their own private key while claiming to be '" +
-                realSenderId + "', causing SIGNATURE_INVALID.";
+                    "MITM impersonation attack was detected. " +
+                            "Attacker signed with their own private key while claiming to be '" +
+                            realSenderId + "', causing SIGNATURE_INVALID.";
+            log.warn("ATTACK_DETECTED: MITM impersonation attempt blocked. Attacker '{}' tried to impersonate '{}' to '{}'",
+                    attackerId, realSenderId, receiverId);
         } else {
             result.success = false;
             result.message = "Unexpected: forged message was accepted!";
